@@ -398,15 +398,30 @@ const PAGE_SIZE = 40;
 let currentBookFilter = null;
 let session = null;
 
+async function fetchAllHighlights(){
+  const pageSize = 1000; // Supabase's own per-request cap — fetch in pages of this size, however many pages that takes
+  let from = 0;
+  let rows = [];
+  while(true){
+    const { data, error } = await sb
+      .from('highlights')
+      .select('id, section, subheading, page, highlighted_on, highlight_number, text, book_id, books(title, category)')
+      .order('highlight_number', { ascending: true })
+      .range(from, from + pageSize - 1);
+    if(error) return { data: null, error };
+    rows = rows.concat(data);
+    if(data.length < pageSize) break; // last page was partial — we're done
+    from += pageSize;
+  }
+  return { data: rows, error: null };
+}
+
 async function boot(){
   const { data: { session: s } } = await sb.auth.getSession();
   session = s;
   updateAuthUI();
 
-  const { data, error } = await sb
-    .from('highlights')
-    .select('id, section, subheading, page, highlighted_on, highlight_number, text, book_id, books(title, category)')
-    .order('highlight_number', { ascending: true });
+  const { data, error } = await fetchAllHighlights();
 
   if(error){
     document.getElementById('libList').innerHTML = `<div class="empty">The shelves won't open: ${error.message}</div>`;
