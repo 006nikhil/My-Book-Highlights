@@ -700,13 +700,40 @@ function buildManageList(){
       <div class="info">
         <span class="spine-dot" style="background:${spineFor(r.cat)}"></span>
         <span class="title">${r.book}</span>
-        <span class="cnt">${r.count}</span>
+        <span class="cnt">${r.cat} \u00b7 ${r.count}</span>
       </div>
-      <button class="remove-btn" data-remove="${r.book_id}" data-title="${r.book}">Retire</button>`;
+      <div style="display:flex; gap:10px; flex-shrink:0;">
+        <button class="remove-btn" data-recategorize="${r.book_id}" data-title="${r.book}" data-category="${r.cat}">Category</button>
+        <button class="remove-btn" data-remove="${r.book_id}" data-title="${r.book}">Retire</button>
+      </div>`;
     wrap.appendChild(row);
   });
 
   wrap.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => removeBook(btn)));
+  wrap.querySelectorAll('[data-recategorize]').forEach(btn => btn.addEventListener('click', () => recategorizeBook(btn)));
+}
+
+async function recategorizeBook(btn){
+  const bookId = btn.dataset.recategorize;
+  const title = btn.dataset.title;
+  const current = btn.dataset.category;
+  const existing = Object.keys(byCategory(ALL)).sort();
+  const menu = existing.map((c, i) => `${i + 1}. ${c}`).join('\n');
+  const choice = (prompt(
+    `Move "${title}" to which category?\n\nType a number to pick an existing one, or type a brand new name.\n\n${menu}`,
+    current
+  ) || '').trim();
+  if(!choice || choice === current) return;
+
+  const asIndex = parseInt(choice, 10);
+  const newCategory = (Number.isInteger(asIndex) && existing[asIndex - 1]) ? existing[asIndex - 1] : choice;
+  if(newCategory === current) return;
+
+  btn.disabled = true; btn.textContent = 'Moving…';
+  const { error } = await sb.from('books').update({ category: newCategory }).eq('id', bookId);
+  if(error){ alert(`Couldn't move it: ${error.message}`); btn.disabled = false; btn.textContent = 'Category'; return; }
+  await boot();
+  switchView('manage');
 }
 
 async function removeBook(btn){
