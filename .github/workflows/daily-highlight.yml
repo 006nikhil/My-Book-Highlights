@@ -2,8 +2,13 @@ name: Send Daily Highlight
 
 on:
   schedule:
-    - cron: "30 2 * * *"
+    # Runs at 8:00 AM UTC every day.
+    # Adjust the hour below to match your timezone offset —
+    # e.g. for 8:00 AM IST (UTC+5:30), use "30 2 * * *" (2:30 AM UTC).
+    - cron: "0 8 * * *"
   workflow_dispatch: {}
+    # ^ lets you manually trigger a test run from the Actions tab in GitHub,
+    # without waiting for the schedule.
 
 jobs:
   send:
@@ -21,6 +26,8 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           CATEGORY_FILTER: ""
           NUM_HIGHLIGHTS: "2"
         run: python send_highlight.py
