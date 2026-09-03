@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Marginalia</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="shortcut icon" href="favicon.ico">
+<meta name="theme-color" content="#2B241C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Marginalia">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -33,6 +43,7 @@
     --spine-default: #6B6152;        /* neutral, for anything unmatched */
 
     --accent: #7A2E2E;                /* the app's own accent — independent of genre colors */
+    --gold: #A9803C;                  /* gilt accent, for decorative flourishes and the logomark */
 
     --shadow: 0 1px 2px rgba(43,36,28,0.06), 0 8px 24px rgba(43,36,28,0.07);
   }
@@ -41,8 +52,11 @@
   body{
     background: var(--vellum);
     background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.16  0 0 0 0 0.13  0 0 0 0 0.09  0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse 1500px 950px at 50% 35%, transparent 55%, rgba(43,36,28,0.05) 100%),
       radial-gradient(ellipse 900px 500px at 8% -10%, rgba(255,255,255,0.35), transparent),
       radial-gradient(ellipse 700px 500px at 100% 0%, rgba(169,128,60,0.08), transparent);
+    background-attachment: fixed;
     color: var(--ink);
     font-family: 'Source Serif 4', Georgia, serif;
     -webkit-font-smoothing: antialiased;
@@ -62,6 +76,8 @@
     border-right: 1px solid var(--rule);
     position: sticky; top: 0; height: 100vh; overflow-y: auto;
   }
+  .brand-row{ display:flex; align-items:center; gap: 10px; }
+  .logomark{ flex-shrink:0; }
   .wordmark{
     font-family: 'Fraunces', serif;
     font-style: italic;
@@ -71,6 +87,7 @@
     margin: 0;
     color: var(--ink);
   }
+  .flourish{ display:block; margin: 10px 0 26px; opacity: .8; }
   .wordmark-sub{
     display:block;
     font-family: 'IBM Plex Mono', monospace;
@@ -78,7 +95,7 @@
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: var(--ink-faint);
-    margin: 4px 0 34px;
+    margin: 4px 0 0;
   }
 
   .nav{ display:flex; flex-direction:column; gap: 2px; margin-bottom: 30px; }
@@ -153,6 +170,12 @@
     padding: 22px 0 22px 22px; margin-bottom: 4px;
     border-left: 3px solid var(--spine-default);
     border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .h-card::after{
+    content:''; position:absolute; top:0; right:0; width:20px; height:20px;
+    background: linear-gradient(135deg, transparent 50%, rgba(43,36,28,0.09) 50%, rgba(43,36,28,0.09) 58%, transparent 58%);
+    pointer-events: none;
   }
   .h-card:last-child{ border-bottom: none; }
   .h-meta{
@@ -185,7 +208,15 @@
     max-width: 620px; width:100%; background: var(--vellum-raised);
     border-radius: 3px; box-shadow: var(--shadow); padding: 40px 44px;
     border-left: 4px solid var(--spine-default);
+    position: relative;
   }
+  .random-card::before, .random-card::after{
+    content:''; position:absolute; width:26px; height:26px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M2,20 L2,4 L18,4' fill='none' stroke='%23A9803C' stroke-width='1.4'/%3E%3Cpath d='M18,4 C22,4 24,6 24,10' fill='none' stroke='%23A9803C' stroke-width='1.4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; opacity: .7; pointer-events: none;
+  }
+  .random-card::before{ top: 10px; left: 10px; }
+  .random-card::after{ bottom: 10px; right: 10px; transform: rotate(180deg); }
   .random-card .h-text{ font-size: 21px; }
   .random-controls{ margin-top: 30px; display:flex; gap: 18px; align-items:center; flex-wrap:wrap; justify-content:center; width: 100%; max-width: 620px; }
   .btn-primary{
@@ -223,7 +254,7 @@
   .book-row .remove-btn:disabled{ opacity: .4; }
 
   .status-msg{ font-family:'IBM Plex Mono', monospace; font-size: 12px; margin-top: 12px; letter-spacing: .3px; }
-  .status-msg.ok{ color: var(--spine-islamic); }
+  .status-msg.ok{ color: var(--spine-science); }
   .status-msg.err{ color: var(--accent); }
 
   .login-box{ max-width: 320px; }
@@ -251,8 +282,22 @@
 
 <div class="app">
   <aside class="sidebar">
-    <h1 class="wordmark">Marginalia</h1>
+    <div class="brand-row">
+      <svg class="logomark" width="30" height="30" viewBox="0 0 512 512" aria-hidden="true">
+        <path d="M 256,178 C 200,152 130,150 84,178 L 84,352 C 130,326 200,332 256,360 Z" fill="none" stroke="var(--ink)" stroke-width="20" stroke-linejoin="round"/>
+        <path d="M 256,178 C 312,152 382,150 428,178 L 428,352 C 382,326 312,332 256,360 Z" fill="none" stroke="var(--ink)" stroke-width="20" stroke-linejoin="round"/>
+        <path d="M 256,172 L 256,366" stroke="var(--gold)" stroke-width="22" stroke-linecap="round"/>
+        <path d="M 232,108 L 280,108 L 280,220 L 256,198 L 232,220 Z" fill="var(--spine-fiction)"/>
+        <line x1="300" y1="270" x2="372" y2="278" stroke="var(--accent)" stroke-width="16" stroke-linecap="round"/>
+        <path d="M 388,254 C 408,262 408,290 388,298" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/>
+      </svg>
+      <h1 class="wordmark">Marginalia</h1>
+    </div>
     <span class="wordmark-sub">A Reading Room</span>
+    <svg class="flourish" width="140" height="16" viewBox="0 0 140 16" aria-hidden="true">
+      <path d="M0,8 H55 M85,8 H140" stroke="var(--rule)" stroke-width="1"/>
+      <path d="M60,8 C63,3 67,3 70,8 C73,13 77,13 80,8" fill="none" stroke="var(--spine-history)" stroke-width="1.2"/>
+    </svg>
 
     <nav class="nav">
       <button class="nav-item active" data-nav="library"><span class="dot"></span>Library</button>
