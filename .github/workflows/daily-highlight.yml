@@ -2,10 +2,9 @@ name: Send Daily Highlight
 
 on:
   schedule:
-    # Runs at 8:00 AM UTC every day.
-    # Adjust the hour below to match your timezone offset —
-    # e.g. for 8:00 AM IST (UTC+5:30), use "30 2 * * *" (2:30 AM UTC).
-    - cron: "0 8 * * *"
+    # 2:17 AM UTC = 7:47 AM IST. An off-the-hour minute is used because
+    # GitHub delays jobs scheduled at :00 the most; this should land ~8 AM IST.
+    - cron: "17 2 * * *"
   workflow_dispatch: {}
     # ^ lets you manually trigger a test run from the Actions tab in GitHub,
     # without waiting for the schedule.
